@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel - Sistema UNCP</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: #f1f5f9; color: #0f172a; }
+    nav { background: #0f172a; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    nav a, nav button { color: #e2e8f0; background: transparent; border: 1px solid #334155; padding: .45rem .8rem; border-radius: 6px; text-decoration: none; cursor: pointer; margin-left: .5rem; }
+    .container { max-width: 1050px; margin: 2rem auto; padding: 0 1rem; }
+    .alerta { background: #fef3c7; border-left: 4px solid #d97706; padding: .9rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .ok { background: #dcfce7; border-left: 4px solid #16a34a; padding: .9rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .panel { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(15,23,42,.06); }
+    table { width: 100%; border-collapse: collapse; margin-top: .75rem; }
+    th, td { text-align: left; padding: .65rem; border-bottom: 1px solid #e2e8f0; font-size: .9rem; }
+    .btn { display: inline-block; background: #1d4ed8; color: #fff; padding: .55rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <nav>
+    <strong>Sistema UNCP — Caso 1 & Caso 2</strong>
+    <div>
+      <span>{{ request.user.username }}</span>
+      <a href="/prestamos/nuevo/">Nuevo préstamo</a>
+      <a href="/admin/">Admin</a>
+      <form method="post" action="/logout/" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Salir</button>
+      </form>
+    </div>
+  </nav>
+  <div class="container">
+    {% if alerta_vencidos %}
+      <div class="alerta">{{ alerta_vencidos }}</div>
+    {% endif %}
+    {% for m in messages %}
+      <div class="ok">{{ m }}</div>
+    {% endfor %}
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Préstamos registrados</h2>
+        <a class="btn" href="/prestamos/nuevo/">+ Solicitar equipo</a>
+      </div>
+      <table>
+        <thead><tr><th>Docente</th><th>Equipo</th><th>Cant.</th><th>Préstamo</th><th>Devolución</th><th>Estado</th></tr></thead>
+        <tbody>
+          {% for p in prestamos %}
+          <tr>
+            <td>{{ p.docente.username }}</td>
+            <td>{{ p.equipo }}</td>
+            <td>{{ p.cantidad }}</td>
+            <td>{{ p.fecha_prestamo }}</td>
+            <td>{{ p.fecha_devolucion }}</td>
+            <td>{{ p.get_estado_display }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6">Sin préstamos registrados aún.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
